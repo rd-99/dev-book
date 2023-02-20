@@ -7,8 +7,10 @@ exports.serve = void 0;
 const express_1 = __importDefault(require("express"));
 const http_proxy_middleware_1 = require("http-proxy-middleware");
 const path_1 = __importDefault(require("path"));
+const cell_1 = require("./routes/cell");
 const serve = (port, filename, dir, useProxy) => {
     const app = (0, express_1.default)();
+    app.use((0, cell_1.createCellsRouter)(filename, dir));
     if (useProxy) {
         app.use(
         //console.log(packagePath);
@@ -20,7 +22,7 @@ const serve = (port, filename, dir, useProxy) => {
     }
     else {
         const packagePath = require.resolve('local-client/build/index.html');
-        express_1.default.static(path_1.default.dirname(packagePath));
+        app.use(express_1.default.static(path_1.default.dirname(packagePath)));
     }
     return new Promise((resolve, reject) => {
         app.listen(port, resolve).on('error', reject);
